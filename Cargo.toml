@@ -1,0 +1,15 @@
+[package]
+name = "rustrayt"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+
+[[example]]
+name = "output_ppm"
+path = "src/l2-1_output_ppm.rs"
+
+
