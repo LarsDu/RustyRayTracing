@@ -4,12 +4,17 @@ use vec3::Vec3 as Point;
 
 mod color;
 use color::{write_color, Color};
-
 mod ray;
 use ray::Ray;
 
 mod camera;
 use camera::Camera;
+
+mod hittable;
+use hittable::*;
+
+mod sphere;
+use sphere::*;
 fn main() {
     // Image
     const ASPECT_RATIO: f32 = 16.0/9.0;
@@ -22,23 +27,29 @@ fn main() {
     render(IMAGE_WIDTH, IMAGE_HEIGHT, &camera);
 }
 
-fn hit_sphere(center: Point, radius: f32, r: &Ray) -> bool{
+fn hit_sphere(center: Point, radius: f32, r: &Ray) -> f32{
     let oc: Vec3 = r.origin - center;
     let a: f32 = Vec3::dot_product(&r.direction, &r.direction);
-    let b = Vec3::dot_product(&oc, &r.direction) * 2.0;
+    let half_b = Vec3::dot_product(&oc, &r.direction);
     let c: f32 = Vec3::dot_product(&oc, &oc) - radius * radius;
-    let discriminant = b*b - 4.0*a*c;
-    return discriminant > 0.0;
+    let discriminant = half_b*half_b - a*c;
+    if discriminant < 0.0 {
+        return -1.0;
+    } else {
+        return (-half_b - f32::sqrt(discriminant))/a;
+    }
 }
 
-fn ray_color(r: &Ray) -> Color {
-    if hit_sphere(Point::new(0.0, 0.0, -1.0), 0.5, &r) {
-        return Color::new(1.0, 0.0, 0.0);
+fn ray_color(r: &Ray, sphere_origin: Vec3) -> Color {
+    let t = hit_sphere(sphere_origin, 0.5, r);
+    if t > 0.0 {
+        let normal = (r.at(t) - sphere_origin).normalized();
+        return Color::new(normal.x + 1.0, normal.y + 1.0, normal.z + 1.0) * 0.5;
     }
     // Calculate unit direction
     let unit_direction: Vec3 = Vec3::normalized(r.direction);
-    let t: f32 = 0.5 * (unit_direction.y + 1.0);
-    return Color::new(1.0, 1.0, 1.0) * (1.0 - t) + Color::new(0.5, 0.7, 1.0) * t;
+    let bgt: f32 = 0.5 * (unit_direction.y + 1.0);
+    return Color::new(1.0, 1.0, 1.0) * (1.0 - bgt) + Color::new(0.5, 0.7, 1.0) * bgt;
 }
 
 fn render(image_width: u32, image_height: u32, camera: &Camera) {
@@ -57,7 +68,7 @@ fn render(image_width: u32, image_height: u32, camera: &Camera) {
                 camera.lower_left_corner + camera.horizontal * u + camera.vertical * v - camera.origin
             );
             write_color(
-                ray_color(&r)
+                ray_color(&r, Vec3::new(0.0, 0.0, -1.0))
             );
         }
     }
