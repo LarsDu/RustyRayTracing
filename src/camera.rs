@@ -4,13 +4,14 @@ use super::Vec3;
 
 
 pub struct Camera{
-    aspect_ratio: f32,
-    viewport_height: f32,
-    viewport_width: f32,
-    focal_length: f32,
-    origin: Point,
-    horizontal: Vec3,
-    lower_left_corner: Vec3
+    pub aspect_ratio: f32,
+    pub viewport_height: f32,
+    pub viewport_width: f32,
+    pub focal_length: f32,
+    pub origin: Point,
+    pub horizontal: Vec3,
+    pub vertical: Vec3,
+    pub lower_left_corner: Vec3
 }
 
 impl Default for Camera{
@@ -29,7 +30,8 @@ impl Default for Camera{
             viewport_width: viewport_width, 
             focal_length: focal_length, 
             origin: origin, 
-            horizontal: horizontal, 
+            horizontal: horizontal,
+            vertical: vertical,
             lower_left_corner: origin - horizontal * 0.5 - vertical * 0.5 - Vec3::new(0.0, 0.0, focal_length)
         }
     }

@@ -7,7 +7,6 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
@@ -42,8 +41,8 @@ impl Vec3 {
     }
 
     // Method Normalized
-    pub fn normalized(self){
-        self/self.length();
+    pub fn normalized(self) -> Self {
+        return self / self.length();
     }
 
     pub fn cross_product(a: &Vec3, b: &Vec3) -> Self {
